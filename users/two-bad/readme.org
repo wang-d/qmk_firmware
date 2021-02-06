@@ -1,0 +1,348 @@
+#+title: Two-bad layout
+#+OPTIONS: ^:nil
+#+html_head: <style> div#text-base-layer table tr:nth-child(odd) td:nth-child(odd) { background: pink }</style>
+
+Two-bad is a stenography-inspired layout for small, columnar-staggered or ortholinear keyboards.  Key are mapped either to single keys or to chords of adjacent keys typed by jamming a finger down between them.
+
+* Principles
+
+The two-bad layout is named after the two things I realized I'm bad at.
+
+1. "Bad at remembering letter-based chords"
+
+   Traditional stenography chooses chords by the letters involved. E.g., Plover theory uses D to indicate past tense. I...couldn't remember them.
+
+   Instead, two-bad chords are all pairs of adjacent keys, which I memorize  by visualizing a grid of points between keys.  Imagine getting a five-row keyboard, all within 1 row of home.
+
+2. "Bad at two-finger combos"
+
+   Stenography chords, and many people's keyboard chords, are stroked by multiple fingers.  E.g., QW.  But when I stroke a chord with two fingers, it isn't reliably much faster than I ordinarily type those keys in sequence.
+
+   Instead, two-bad chords are always pairs of adjacent keys on the same finger.  This forces me to type them slowly in sequence. But I can stroke the pair much faster with one finger in the gap between them.
+
+* Keyboard compatibility
+
+Two-bad requires a columnar-staggered or ortholinear keyboard with at least 3x10+3 keys if unsplit or 3x5+2 on each hand if split. At home I use a lily58 with a bunch of keycaps pulled off (and if that bothers you, don't ask me how I spill-proofed my Tex Yoda).
+
+Ideally, you would use light switches.  Chords require actuation of two switches with a single finger, doubling the effective actuation force.  That said, 60g switches are what I have, so I've been using those.  No issues yet.
+
+* Layout
+** Abbreviations
+   In all the following layers, physical keys are bolded, and the following abbreviations are used:
+
+#+name: abbrevs
+#+BEGIN_SRC C
+  #define KC_SPLA MT(MOD_LALT, KC_SPC)
+  #define KC_SPLC MT(MOD_LCTL, KC_SPC)
+  #define KC_1SLS OSM(MOD_LSFT)
+#+END_SRC
+
+** Base (and only!) layer
+   :PROPERTIES:
+   :CUSTOM_ID: base-layer
+   :END:
+
+   The main layer fits a 65% layout onto 33 keys:
+
+   - Colemak on the physical keys
+
+#+name: abc
+| / | <    |    |      |     |      |     |        |     | >      |   | <      |   |        |   |        |   |       |      | >      |
+|   | *q*  | f1 | *w*  | f2  | *f*  | f3  | *p*    | f4  | *g*    |   | *j*    | 7 | *l*    | 8 | *u*    | 9 | *y*   | app  | *bspc* |
+|   | pscr |    | up   |     | tab  |     | home   |     | ins    |   | home   |   | pgup   |   | mins   |   | eql   |      | scln   |
+|   | *a*  | f5 | *r*  | f6  | *s*  | f7  | *t*    | f8  | *d*    |   | *h*    | 4 | *n*    | 5 | *e*    | 6 | *i*   | grv  | *o*    |
+|   | left |    | down |     | rght |     | end    |     | del    |   | end    |   | pgdn   |   | lbrc   |   | rbrc  |      | quot   |
+|   | *z*  | f9 | *x*  | f10 | *c*  | f11 | *v*    | f12 | *b*    |   | *k*    | 1 | *m*    | 2 | *comm* | 3 | *dot* | bsls | *slsh* |
+|   |      |    |      |     |      |     | lgui   |     | esc    |   | 0      |   | ent    |   |        |   |       |      |        |
+|   |      |    |      |     |      |     | *1sls* |     | *splc* |   | *spla* |   | *1sls* |   | **     |   | **    |      | **     |
+
+* History
+
+  This section will be of interest only to people developing their own layouts.  May you find inspiration in the ideas I tried.  Some of them are even wackier than where I ended.
+
+** mod-combos under the home row
+
+   E.g., in the bottom left,
+
+| *a*  |   | *r*  |   | *s*  |   | *t*  |
+| lgui |   | lalt |   | lsft |   | lctl |
+| *z*  |   | *x*  |   | *c*  |   | *v*  |
+
+  I couldn't apply multiple mods to a single key, e.g., I'd do
+
+  1. press =a= and =z=
+  2. press =r= and =x=
+  3. tap =j=
+  4. release =r= and =x=
+  5. release =a= and =z=
+
+  expecting to get =C-M-j= but instead I'd get...not that.  Nothing predictable.  I wonder if maybe the combo code was generating =a= and =z=, rewriting that to =Ctrl=, then generating =C-r= and =C-x= instead of =x= and =r= to create the next =Meta= combo.
+
+  Note: I think sevanteri's PR #8591 would let this work.
+
+** home-row one-shot mods on another layer
+
+   E.g., this on the left hand of a =_fun= layer accessed via a third thumb key:
+
+| / | <               |   |                 |   |                 |   |                 |   | >      |
+|   | **              |   | **              |   | **              |   | **              |   | **     |
+|   |                 |   |                 |   |                 |   |                 |   |        |
+|   | *OSM(MOD_LGUI)* |   | *OSM(MOD_LALT)* |   | *OSM(MOD_LSFT)* |   | *OSM(MOD_LCTL)* |   | **     |
+|   |                 |   |                 |   |                 |   |                 |   |        |
+|   | **              |   | **              |   | **              |   | **              |   | **     |
+|   |                 |   |                 |   |                 |   |                 |   |        |
+|   |                 |   |                 |   |                 |   | *_fun*          |   | *spsf* |
+
+   This let me type all the combinations of mod and key, but often required long sequences for common commands.  E.g., for =C-c C-x=,
+
+   1. press =_fun=
+   2. tap =OSM(MOD_RCTL)=
+   3. release =_fun=
+   4. tap =c=
+   5. press =_fun=
+   6. tap =OSM(MOD_RCTL)=
+   7. release =_fun=
+   8. tap =x=
+
+** avoiding multi-finger combos
+
+   At first I tried to limit myself to combos of keys that would be typed by the same finger.  I was accidentally triggering combos during fast rolls of adjacent fingers, and I figured I couldn't do fast rolls on the same finger.
+
+   This turned out to be solved by reducing =COMBO_TERM=.  At 25ms, accidental combos are rare enough that I'd rather have the extra 24 combos available.
+
+   Here's an example of a layout that avoided multi-finger combos:
+
+| / | <    |   |      |   |        |   |        |      | >      |   | <      |   |        |   |        |   |       |   | >      |
+|   | *q*  |   | *w*  |   | *f*    |   | *p*    | lgui | *g*    |   | *j*    | 1 | *l*    |   | *u*    |   | *y*   |   | *scln* |
+|   | grv  |   | up   |   | tab    |   | mins   |      | eql    |   | 4      |   | 5      |   | 6      |   | 7     |   | bsls   |
+|   | *a*  |   | *r*  |   | *s*    |   | *t*    | lctl | *d*    |   | *h*    | 2 | *n*    |   | *e*    |   | *i*   |   | *o*    |
+|   | left |   | down |   | rght   |   | lbrc   |      | rbrc   |   | 8      |   | 9      |   | 0      |   | ent   |   | quot   |
+|   | *z*  |   | *x*  |   | *c*    |   | *v*    | lalt | *b*    |   | *k*    | 3 | *m*    |   | *comm* |   | *dot* |   | *slsh* |
+|   |      |   |      |   |        |   |        |      |        |   |        |   |        |   |        |   |       |   |        |
+|   |      |   |      |   | *_fun* |   | *eslc* |      | *spsf* |   | *spsf* |   | *bsla* |   | *_nav* |   | **    |   | **     |
+
+** First all-combos layout
+
+| / | <    |    |      |     |        |     |        |     | >      |   | <      |   |        |   |        |   |       |     | >      |
+|   | *q*  | f1 | *w*  | f2  | *f*    | f3  | *p*    | f4  | *g*    |   | *j*    | 7 | *l*    | 8 | *u*    | 9 | *y*   | ins | *scln* |
+|   | pgup |    | grv  |     | mins   |     | eql    |     | rbrc   |   | left   |   | up     |   | rght   |   | wh_u  |     | quot   |
+|   | *a*  | f5 | *r*  | f6  | *s*    | f7  | *t*    | f8  | *d*    |   | *h*    | 4 | *n*    | 5 | *e*    | 6 | *i*   | 0   | *o*    |
+|   | pgdn |    | lgui |     | tab    |     | ent    |     | lbrc   |   | bsls   |   | down   |   | wh_l   |   | wh_d  |     | wh_r   |
+|   | *z*  | f9 | *x*  | f10 | *c*    | f11 | *v*    | f12 | *b*    |   | *k*    | 1 | *m*    | 2 | *comm* | 3 | *dot* | del | *slsh* |
+|   |      |    |      |     |        |     |        |     |        |   |        |   |        |   |        |   |       |     |        |
+|   |      |    |      |     | *_fun* |     | *eslc* |     | *spsf* |   | *spsf* |   | *bsla* |   | *_nav* |   | **    |     | **     |
+
+
+** =_ABC= layer
+
+| / | <    |    |      |     |        |     |        |     | >      |   | <      |   |        |   |        |   |       |      | >      |
+|   | *q*  | f1 | *w*  | f2  | *f*    | f3  | *p*    | f4  | *g*    |   | *j*    | 7 | *l*    | 8 | *u*    | 9 | *y*   | bsls | *bspc* |
+|   | lgui |    | up   |     | grv    |     | esc    |     | ins    |   | home   |   | pgup   |   | mins   |   | eql   |      | scln |
+|   | *a*  | f5 | *r*  | f6  | *s*    | f7  | *t*    | f8  | *d*    |   | *h*    | 4 | *n*    | 5 | *e*    | 6 | *i*   | 0    | *o*    |
+|   | left |    | down |     | rght   |     | tab    |     | del    |   | end    |   | pgdn   |   | lbrc   |   | rbrc  |      | quot |
+|   | *z*  | f9 | *x*  | f10 | *c*    | f11 | *v*    | f12 | *b*    |   | *k*    | 1 | *m*    | 2 | *comm* | 3 | *dot* | slsh | *ent* |
+|   |      |    |      |     |        |     |        |     |        |   |        |   |        |   |        |   |       |      |        |
+|   |      |    |      |     | *_fun* |     | *1sls* |     | *splc* |   | *spla* |   | *1sls* |   | *_nav* |   | **    |      | **     |
+
+** =_ABC= layer
+
+   The main layer fits a 65% layout onto 33 keys:
+
+   - Colemak on the physical keys
+   - Modifiers on the lower row chords of each hand
+   - Numbers on the other right hand chords
+   - Other punctuation and =ESC=, =TAB=, =ENT= on the left hand chords
+   - Either thumb types =SPC= when tapped or =LSFT= when held.
+
+#+name: abc3
+| / | <    |    |      |     |        |     |        |     | >      |   | <      |   |        |   |        |   |       |      | >      |
+|   | *q*  | f1 | *w*  | f2  | *f*    | f3  | *p*    | f4  | *g*    |   | *j*    | 7 | *l*    | 8 | *u*    | 9 | *y*   | bsls | *bspc* |
+|   | lgui |    | up   |     | grv    |     | esc    |     | ins    |   | home   |   | pgup   |   | mins   |   | eql   |      | scln   |
+|   | *a*  | f5 | *r*  | f6  | *s*    | f7  | *t*    | f8  | *d*    |   | *h*    | 4 | *n*    | 5 | *e*    | 6 | *i*   | 0    | *o*    |
+|   | left |    | down |     | rght   |     | tab    |     | del    |   | end    |   | pgdn   |   | lbrc   |   | rbrc  |      | quot   |
+|   | *z*  | f9 | *x*  | f10 | *c*    | f11 | *v*    | f12 | *b*    |   | *k*    | 1 | *m*    | 2 | *comm* | 3 | *dot* | slsh | *ent*  |
+|   |      |    |      |     |        |     |        |     |        |   |        |   |        |   |        |   |       |      |        |
+|   |      |    |      |     | *_fun* |     | *1sls* |     | *splc* |   | *spla* |   | *1sls* |   | *_nav* |   | **    |      | **     |
+
+   The numbers are neither the typical num-pad or num-row arrangements, but run predictably across the board and when shifted place the parentheses under my right index finger.  The brackets are in the corresponding chords under my left index finger.
+
+   As in the great miryoku layout, one uses the thumb of one hand to activate a layer, the fingers of the same hand to add modifiers, and the other hand to type on the new layer.
+
+
+* Code
+
+  Again I must thank manna-harbour, this time for the idea of writing my layout as a single org file that tangles out the QMK code using org-babel.
+
+** generate-layout
+
+#+name: generate-layout
+#+BEGIN_SRC python :var table=abc :tangle no
+  def of_cell(cell):
+      return cell[1:-1].upper() if cell not in [ '', '**' ] else 'NO'
+
+  def of_row(row):
+      return ', '.join('KC_{0: <4}'.format(of_cell(cell)) for cell in row[1::2])
+
+  def of_table(table):
+      return ',\n'.join(of_row(row) for row in table[1::2]).strip()
+
+  return 'LAYOUT_two_bad(\n{0}\n)'.format(of_table(table))
+#+END_SRC
+
+** generate-combos
+
+   We use the gboards macros to simplify combo definition.
+
+#+name: generate-combos
+#+BEGIN_SRC python :var table=abc :tangle no
+  def name_of_key(cell):
+      return cell[1:-1].upper()
+
+  def combo(key1, key2, output):
+      return 'KC_COMBO({0: <4}, {1: <4}, {2: <4})'.format(name_of_key(key1), name_of_key(key2), str(output).upper())
+
+  def horizontal_combos(table):
+      for row in xrange(1, len(table), 2):
+          for col in xrange(2, len(table[0]), 2):
+              if table[row][col] != '':
+                  yield combo(table[row][col-1], table[row][col+1], table[row][col])
+
+  def vertical_combos(table):
+      for row in xrange(2, len(table), 2) :
+          for col in xrange(1, len(table[0]), 2):
+              if table[row][col] != '' :
+                  yield combo(table[row-1][col], table[row+1][col], table[row][col])
+
+  return '{0}\n{1}'.format('\n'.join(horizontal_combos(table)), '\n'.join(vertical_combos(table)))
+#+END_SRC
+
+* Templates
+** header
+
+#+NAME: header
+#+BEGIN_SRC C :tangle no
+generated from users/two-bad/readme.org  -*- buffer-read-only: t -*-
+#+END_SRC
+** Userspace
+*** rules.mk
+
+ #+name: rules.mk
+ #+BEGIN_SRC makefile :noweb no :padline no :tangle rules.mk
+   # <<header>>
+
+   MOUSEKEY_ENABLE = yes # Mouse keys
+   EXTRAKEY_ENABLE = yes # Audio control and System control
+
+   COMBO_ENABLE=yes # Combos
+   VPATH  +=  keyboards/gboards/ # helpers for combos
+
+   SRC += two-bad.c # keymap
+ #+END_SRC
+
+*** config.h
+
+#+BEGIN_SRC C :noweb yes :padline no :tangle config.h
+  // <<header>>
+
+  #pragma once
+
+  // default but important
+  #define TAPPING_TERM 200
+
+  // For gboards combos
+  #define COMBO_VARIABLE_LEN
+  #define COMBO_TERM 30
+
+  // Prevent normal rollover on alphas from accidentally triggering mods.
+  #define IGNORE_MOD_TAP_INTERRUPT
+
+  // Recommended for heavy chording.
+  #define QMK_KEYS_PER_SCAN 4
+
+  // Mouse key speed and acceleration.
+  #undef MOUSEKEY_DELAY
+  #define MOUSEKEY_DELAY          0
+  #undef MOUSEKEY_INTERVAL
+  #define MOUSEKEY_INTERVAL       16
+  #undef MOUSEKEY_WHEEL_DELAY
+  #define MOUSEKEY_WHEEL_DELAY    0
+  #undef MOUSEKEY_MAX_SPEED
+  #define MOUSEKEY_MAX_SPEED      6
+  #undef MOUSEKEY_TIME_TO_MAX
+  #define MOUSEKEY_TIME_TO_MAX    64
+
+#+END_SRC
+*** two-bad.c
+
+ #+name: two-bad.c
+ #+BEGIN_SRC C :noweb yes :padline no :tangle two-bad.c
+   // <<header>>
+
+   #include QMK_KEYBOARD_H
+
+   <<abbrevs>>
+
+   #include "g/keymap_combo.h"
+
+   enum layers { _ABC };
+
+
+   const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+         [_ABC] =
+   <<generate-layout(base=abc, superimpose=abc, col_offset=0)>>
+   };
+ #+END_SRC
+
+*** combos.def
+ #+name: combos.def
+ #+BEGIN_SRC C :noweb yes :padline no :tangle combos.def
+   // <<header>>
+
+   #define KC_COMBO(K1, K2, KOUT) COMB(K1##_##K2##_##KOUT, KC_##KOUT, KC_##K1, KC_##K2)
+
+   <<generate-combos(table=abc)>>
+
+   #undef KC_COMBO
+ #+END_SRC
+** Keyboards
+*** lily58
+**** config.h
+
+     Translate two-bad layout to lily58 keyboard.
+
+#+BEGIN_SRC C :noweb yes :padline no :tangle ../../keyboards/lily58/keymaps/two-bad/config.h
+  // <<header>>
+
+  #pragma once
+
+  #define XXX KC_NO
+
+  #define LAYOUT_two_bad(                                                 \
+       K00, K01, K02, K03, K04,                K05, K06, K07, K08, K09,   \
+       K10, K11, K12, K13, K14,                K15, K16, K17, K18, K19,   \
+       K20, K21, K22, K23, K24,                K25, K26, K27, K28, K29,   \
+       N30, N31, K32, K33, K34,                K35, K36, K37, N38, N39    \
+       )                                                                  \
+       LAYOUT(                                                            \
+            XXX, XXX, XXX, XXX, XXX, XXX,                XXX, XXX, XXX, XXX, XXX, XXX, \
+            XXX, K00, K01, K02, K03, K04,                K05, K06, K07, K08, K09, XXX, \
+            XXX, K10, K11, K12, K13, K14,                K15, K16, K17, K18, K19, XXX, \
+            XXX, K20, K21, K22, K23, K24, XXX,      XXX, K25, K26, K27, K28, K29, XXX, \
+                           XXX, K32, K33, K34,      K35, K36, K37, XXX                   \
+            )
+#+END_SRC
+**** keymap.c
+
+     Required by the build system.
+
+#+BEGIN_SRC C :noweb yes :padline no :tangle ../../keyboards/lily58/keymaps/two-bad/keymap.c
+// <<header>>
+#+END_SRC
+
+* Org mode setup
+
+  We use file variables to set =org-confirm-babel-evaluate= to =nil=.  I prefer to do so in each file where I feel this is safe, rather than set it globally.
+
+# Local Variables:
+# org-confirm-babel-evaluate: nil
+# End:
